@@ -32,7 +32,7 @@ func Run() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Fun flights API")
 	})
-	e.POST("/routes", routesCtl.Get)
+	e.GET("/routes", routesCtl.Get)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

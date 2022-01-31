@@ -36,6 +36,7 @@ func NewRouteService(
 ) RouteService {
 	return &routeService{
 		routesProviders: routesProviders,
+		httpClient:      httpClient,
 	}
 }
 
@@ -59,7 +60,11 @@ func (s *routeService) GetRoutes() ([]Route, error) {
 		}
 	}
 
-	return nil, nil
+	if len(allRoutes) == 1 {
+		return allRoutes[0], nil
+	}
+
+	return mergeRoutes(allRoutes), nil
 }
 
 func (s *routeService) getProviderRoutes(url string) ([]Route, error) {
@@ -67,6 +72,7 @@ func (s *routeService) getProviderRoutes(url string) ([]Route, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		body, err := io.ReadAll(resp.Body)
@@ -85,4 +91,43 @@ func (s *routeService) getProviderRoutes(url string) ([]Route, error) {
 	}
 
 	return routes, nil
+}
+
+func mergeRoutes(allRoutes [][]Route) []Route {
+	if len(allRoutes) == 0 {
+		return []Route{}
+	}
+
+	if len(allRoutes) == 1 {
+		return allRoutes[0]
+	}
+
+	routes := map[string][]Route{}
+	for i := len(allRoutes) - 1; i >= 0; i-- {
+		for j := 0; j < len(allRoutes[i]); j++ {
+			currentRoute := allRoutes[i][j]
+			if _, ok := routes[currentRoute.SourceAirport]; ok {
+				routeExsists := false
+				for k := 0; k < len(routes[currentRoute.SourceAirport]); k++ {
+					if routes[currentRoute.SourceAirport][k].DestinationAirport == currentRoute.DestinationAirport {
+						routes[currentRoute.SourceAirport][k] = currentRoute
+						routeExsists = true
+						break
+					}
+				}
+				if !routeExsists {
+					routes[currentRoute.SourceAirport] = append(routes[currentRoute.SourceAirport], currentRoute)
+				}
+				continue
+			}
+			routes[currentRoute.SourceAirport] = []Route{currentRoute}
+		}
+	}
+	mergedroutes := make([]Route, 0, len(allRoutes[1]))
+
+	for _, v := range routes {
+		mergedroutes = append(mergedroutes, v...)
+	}
+
+	return mergedroutes
 }
