@@ -2,6 +2,8 @@ package app
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -14,10 +16,7 @@ import (
 func Run() {
 	routesCtl := controllers.NewRouteController(
 		routeservice.NewRouteService(
-			[]string{
-				"http://ase.asmt.live:8000/provider/flights1", //TODO: move to env
-				"http://ase.asmt.live:8000/provider/flights2",
-			},
+			strings.Split(os.Getenv("FLY_PROVIDERS"), ","),
 			httpclient.NewHTTPClient(),
 		),
 	)
