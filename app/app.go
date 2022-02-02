@@ -14,6 +14,7 @@ import (
 
 // Run is the App Entry Point
 func Run() {
+	//Controllers
 	routesCtl := controllers.NewRouteController(
 		routeservice.NewRouteService(
 			strings.Split(os.Getenv("FLY_PROVIDERS"), ","),
@@ -23,7 +24,7 @@ func Run() {
 
 	e := echo.New()
 
-	// Middleware
+	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

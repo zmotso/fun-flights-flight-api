@@ -16,12 +16,14 @@ type routeController struct {
 	routesService routeservice.RouteService
 }
 
+//NewRouteController will instantiate RouteController
 func NewRouteController(routesService routeservice.RouteService) *routeController {
 	return &routeController{
 		routesService: routesService,
 	}
 }
 
+//Get will return routes from providers
 func (ctl *routeController) Get(c echo.Context) error {
 	routes, err := ctl.routesService.GetRoutes()
 	if err != nil {
