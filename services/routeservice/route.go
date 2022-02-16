@@ -10,7 +10,7 @@ import (
 	"github.com/zmotso/fun-flights-flight-api/httpclient"
 )
 
-//Route represents flying route between airports
+// Route represents flying route between airports
 type Route struct {
 	Airline            string `json:"airline"`
 	SourceAirport      string `json:"sourceAirport"`
@@ -41,10 +41,10 @@ func NewRouteService(
 	}
 }
 
-//GetRoutes will return merged routes from providers
-//TODO:
-//- cache result or store in mongodb
-//- filter by source and destination airport
+// GetRoutes will return merged routes from providers
+// TODO:
+// - cache result or store in mongodb
+// - filter by source and destination airport
 func (s *routeService) GetRoutes() ([]Route, error) {
 	ch := make(chan []Route)
 
