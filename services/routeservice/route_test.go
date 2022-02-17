@@ -3,7 +3,7 @@ package routeservice
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -73,7 +73,7 @@ func TestGetRoutes(t *testing.T) {
 			"provider2": datapr2,
 		}
 
-		r := ioutil.NopCloser(bytes.NewReader(mockData[url]))
+		r := io.NopCloser(bytes.NewReader(mockData[url]))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,

@@ -3,6 +3,7 @@ module github.com/zmotso/fun-flights-flight-api
 go 1.17
 
 require (
+	github.com/hashicorp/go-retryablehttp v0.7.0
 	github.com/labstack/echo/v4 v4.6.3
 	github.com/stretchr/testify v1.7.0
 )
@@ -10,6 +11,7 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

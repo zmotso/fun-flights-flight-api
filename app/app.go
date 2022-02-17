@@ -27,7 +27,7 @@ func Run() {
 	routesCtl := controllers.NewRouteController(
 		routeservice.NewRouteService(
 			conf.FlyProviders,
-			httpclient.NewHTTPClient(),
+			httpclient.NewHTTPClient(e.Logger),
 		),
 	)
 
@@ -44,7 +44,7 @@ func Run() {
 	// Start server
 	go func() {
 		if err := e.Start(conf.Port); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+			e.Logger.Fatalf("shutting down the server %s", err.Error())
 		}
 	}()
 

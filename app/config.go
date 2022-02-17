@@ -15,7 +15,7 @@ func NewConfig() (*Config, error) {
 	conf := &Config{Port: ":8080"}
 
 	conf.FlyProviders = strings.Split(os.Getenv("FLY_PROVIDERS"), ",")
-	if len(conf.FlyProviders) == 0 {
+	if os.Getenv("FLY_PROVIDERS") == "" || len(conf.FlyProviders) == 0 {
 		return nil, errors.New("failed to get fly providers")
 	}
 
