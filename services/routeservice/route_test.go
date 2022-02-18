@@ -2,6 +2,7 @@ package routeservice
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -85,7 +86,7 @@ func TestGetRoutes(t *testing.T) {
 		client,
 	)
 
-	routes, err := service.GetRoutes()
+	routes, err := service.GetRoutes(context.Background())
 	if assert.NoError(t, err) {
 		assert.Equal(t, 3, len(routes))
 	}

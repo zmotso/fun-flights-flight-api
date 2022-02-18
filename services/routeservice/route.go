@@ -1,6 +1,7 @@
 package routeservice
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,7 +9,10 @@ import (
 	"net/http"
 
 	"github.com/zmotso/fun-flights-flight-api/httpclient"
+	"go.opentelemetry.io/otel"
 )
+
+var tracer = otel.Tracer("routeservice")
 
 // Route represents flying route between airports
 type Route struct {
@@ -22,7 +26,7 @@ type Route struct {
 
 // RouteService interface
 type RouteService interface {
-	GetRoutes() ([]Route, error)
+	GetRoutes(ctx context.Context) ([]Route, error)
 }
 
 type routeService struct {
@@ -45,7 +49,10 @@ func NewRouteService(
 // TODO:
 // - cache result or store in mongodb
 // - filter by source and destination airport
-func (s *routeService) GetRoutes() ([]Route, error) {
+func (s *routeService) GetRoutes(ctx context.Context) ([]Route, error) {
+	_, span := tracer.Start(ctx, "GetRoutes")
+	defer span.End()
+
 	ch := make(chan []Route)
 
 	for _, providerURL := range s.routesProviders {

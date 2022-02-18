@@ -25,7 +25,7 @@ func NewRouteController(routesService routeservice.RouteService) *routeControlle
 
 // Get will return routes from providers
 func (ctl *routeController) Get(c echo.Context) error {
-	routes, err := ctl.routesService.GetRoutes()
+	routes, err := ctl.routesService.GetRoutes(c.Request().Context())
 	if err != nil {
 		return err
 	}
