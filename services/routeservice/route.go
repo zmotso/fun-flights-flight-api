@@ -8,8 +8,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/zmotso/fun-flights-flight-api/httpclient"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 var tracer = otel.Tracer("routeservice")
@@ -50,14 +53,14 @@ func NewRouteService(
 // - cache result or store in mongodb
 // - filter by source and destination airport
 func (s *routeService) GetRoutes(ctx context.Context) ([]Route, error) {
-	_, span := tracer.Start(ctx, "GetRoutes")
+	ctx, span := tracer.Start(ctx, "GetRoutes")
 	defer span.End()
 
 	ch := make(chan []Route)
 
 	for _, providerURL := range s.routesProviders {
 		go func(providerURL string) {
-			routes, err := s.getProviderRoutes(providerURL)
+			routes, err := s.getProviderRoutes(ctx, providerURL)
 			if err != nil {
 				log.Println("error getting routes", providerURL, err.Error())
 			}
@@ -79,8 +82,16 @@ func (s *routeService) GetRoutes(ctx context.Context) ([]Route, error) {
 	return mergeRoutes(allRoutes), nil
 }
 
-func (s *routeService) getProviderRoutes(url string) ([]Route, error) {
-	resp, err := s.httpClient.Get(url)
+func (s *routeService) getProviderRoutes(ctx context.Context, url string) ([]Route, error) {
+	ctx, span := tracer.Start(ctx, "getProviderRoutes", oteltrace.WithAttributes(attribute.String("url", url)))
+	defer span.End()
+
+	req, err := retryablehttp.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +112,8 @@ func (s *routeService) getProviderRoutes(url string) ([]Route, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	span.SetAttributes(attribute.Bool("success", true))
 
 	return routes, nil
 }

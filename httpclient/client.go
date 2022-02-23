@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 )
 
 type HTTPClient interface {
-	Get(url string) (resp *http.Response, err error)
+	Do(req *retryablehttp.Request) (*http.Response, error)
 }
 
 type errResp struct {
@@ -30,6 +31,7 @@ func NewHTTPClient(logger interface{}) HTTPClient {
 	client.HTTPClient.Timeout = defaultTimeOut
 	client.Logger = logger
 	client.CheckRetry = checkRetry
+	client.HTTPClient.Transport = otelhttp.NewTransport(client.HTTPClient.Transport)
 
 	return client
 }

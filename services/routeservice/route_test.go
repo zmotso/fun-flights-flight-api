@@ -8,20 +8,21 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/assert"
 )
 
 type httpClientMock struct {
-	GetMock func(url string) (resp *http.Response, err error)
+	DoMock func(req *retryablehttp.Request) (*http.Response, error)
 }
 
-func (c *httpClientMock) Get(url string) (resp *http.Response, err error) {
-	return c.GetMock(url)
+func (c *httpClientMock) Do(req *retryablehttp.Request) (*http.Response, error) {
+	return c.DoMock(req)
 }
 
 func TestGetRoutes(t *testing.T) {
 	client := &httpClientMock{}
-	client.GetMock = func(url string) (resp *http.Response, err error) {
+	client.DoMock = func(req *retryablehttp.Request) (*http.Response, error) {
 
 		datapr1, err := json.Marshal([]Route{
 			{
@@ -74,7 +75,7 @@ func TestGetRoutes(t *testing.T) {
 			"provider2": datapr2,
 		}
 
-		r := io.NopCloser(bytes.NewReader(mockData[url]))
+		r := io.NopCloser(bytes.NewReader(mockData[req.URL.Host]))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -82,7 +83,7 @@ func TestGetRoutes(t *testing.T) {
 	}
 
 	service := NewRouteService(
-		[]string{"provider1", "provider2"},
+		[]string{"http://provider1", "http://provider2"},
 		client,
 	)
 

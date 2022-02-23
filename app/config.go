@@ -9,10 +9,14 @@ import (
 type Config struct {
 	FlyProviders []string
 	Port         string
+	JaegerURL    string
 }
 
 func NewConfig() (*Config, error) {
-	conf := &Config{Port: ":8080"}
+	conf := &Config{
+		Port:      ":8080",
+		JaegerURL: "http://localhost:14268/api/traces", //TODO: to env
+	}
 
 	conf.FlyProviders = strings.Split(os.Getenv("FLY_PROVIDERS"), ",")
 	if os.Getenv("FLY_PROVIDERS") == "" || len(conf.FlyProviders) == 0 {
