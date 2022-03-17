@@ -1,12 +1,11 @@
 # fun-flights-flight-api
 To run API:
 ```
-FLY_PROVIDERS=http://ase.asmt.live:8000/provider/flights1,http://ase.asmt.live:8000/provider/flights2 go run .
+FLY_PROVIDERS=http://ase.asmt.live:8000/provider/flights1,http://ase.asmt.live:8000/provider/flights2 JAEGER_URL=http://localhost:14268/api/traces go run .
 ```
 
-
 ```
-FLY_PROVIDERS=http://localhost:1323/provider/flights1,http://localhost:1323/provider/flights2,http://localhost:1323/provider/flights3 go run .
+FLY_PROVIDERS=http://localhost:1323/provider/flights1,http://localhost:1323/provider/flights2,http://localhost:1323/provider/flights3 JAEGER_URL=http://localhost:14268/api/traces go run .
 ```
 
 To run liters:

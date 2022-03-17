@@ -14,8 +14,7 @@ type Config struct {
 
 func NewConfig() (*Config, error) {
 	conf := &Config{
-		Port:      ":8080",
-		JaegerURL: "http://localhost:14268/api/traces", //TODO: to env
+		Port: ":8080",
 	}
 
 	conf.FlyProviders = strings.Split(os.Getenv("FLY_PROVIDERS"), ",")
@@ -25,6 +24,10 @@ func NewConfig() (*Config, error) {
 
 	if port := os.Getenv("PORT"); port != "" {
 		conf.Port = ":" + port
+	}
+
+	if jaeger := os.Getenv("JAEGER_URL"); jaeger != "" {
+		conf.JaegerURL = jaeger
 	}
 
 	return conf, nil

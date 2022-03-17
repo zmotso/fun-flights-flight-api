@@ -99,5 +99,6 @@ func initTracer(conf *Config) *sdktrace.TracerProvider {
 	)
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+
 	return tp
 }
